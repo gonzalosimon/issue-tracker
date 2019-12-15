@@ -9,9 +9,7 @@ var mocha = new Mocha();
 var testDir = './tests'
 
 
-// Add each .js file to the mocha instance
 fs.readdirSync(testDir).filter(function(file){
-    // Only keep the .js files
     return file.substr(-3) === '.js';
 
 }).forEach(function(file){
@@ -26,19 +24,15 @@ emitter.run = function() {
   var tests = [];
   var context = "";
   var separator = ' -> ';
-  // Run the tests.
   try {
   var runner = mocha.ui('tdd').run()
     .on('test end', function(test) {
-        // remove comments
         var body = test.body.replace(/\/\/.*\n|\/\*.*\*\//g, '');
-        // collapse spaces
         body = body.replace(/\s+/g,' ');
         var obj = {
           title: test.title,
           context: context.slice(0, -separator.length),
           state: test.state,
-          // body: body,
           assertions: analyser(body)
         };
         tests.push(obj);

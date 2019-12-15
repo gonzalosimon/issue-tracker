@@ -1,6 +1,5 @@
 function objParser(str, init) {
-  // finds objects, arrays, strings, and function arguments
-  // between parens, because they may contain ','
+  
   var openSym = ['[', '{', '"', "'", '('];
   var closeSym = [']', '}', '"', "'", ')'];
   var type;
@@ -32,7 +31,6 @@ function objParser(str, init) {
 }
 
 function replacer(str) {
-  // replace objects with a symbol ( __#n)
   var obj;
   var cnt = 0;
   var data = [];
@@ -47,7 +45,6 @@ function replacer(str) {
 }
 
 function splitter(str) {
-  // split on commas, then restore the objects
   var strObj = replacer(str);
   var args = strObj.str.split(',');
   args = args.map(function(a){
@@ -63,22 +60,13 @@ function splitter(str) {
 
 function assertionAnalyser(body) {
   
-  // already filtered in the test runner
-  // // remove comments
-  // body = body.replace(/\/\/.*\n|\/\*.*\*\//g, '');
-  // // get test function body
-  // body = body.match(/\{\s*([\s\S]*)\}\s*$/)[1];
   
   if(!body) return "invalid assertion";
-  // replace assertions bodies, so that they cannot
-  // contain the word 'assertion'
 
   var body = body.match(/(?:browser\s*\.\s*)?assert\s*\.\s*\w*\([\s\S]*\)/)[0];
   var s = replacer(body);
-  // split on 'assertion'
   var splittedAssertions = s.str.split('assert');
   var assertions = splittedAssertions.slice(1);
-  // match the METHODS
 
   var assertionBodies = [];
   var methods = assertions.map(function(a, i){
@@ -88,14 +76,13 @@ function assertionAnalyser(body) {
     return pre + m[1];
   });
   if(methods.some(function(m){ return !m })) return "invalid assertion";
-  // remove parens from the assertions bodies
   var bodies = assertionBodies.map(function(b){
     return s.dictionary[b].slice(1,-1).trim();
   });
   assertions = methods.map(function(m, i) {
     return {
       method: m,
-      args: splitter(bodies[i]) //replace objects, split on ',' ,then restore objects
+      args: splitter(bodies[i]) 
     }
   })
   return assertions;
